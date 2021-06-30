@@ -123,3 +123,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# large file
+nyt_articles_2012_to_2016.pickle.gz

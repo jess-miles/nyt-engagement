@@ -1,6 +1,7 @@
 import html
 import re
 import string
+import numpy as np
 import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
@@ -141,8 +142,11 @@ def pattern_match_in_df(df, doc_col, hit_col, pattern, out_type='list',
     
     # loop through each row in the dataframe to process its record
     for i in df.index:
-        new_doc, hits = get_pattern_hits(df.at[i, doc_col], pattern, out_type)
-        updates.append([i, new_doc, hits])
+        if df.at[i, doc_col] is not np.nan:
+            new_doc, hits = get_pattern_hits(df.at[i, doc_col], pattern, out_type)
+            updates.append([i, new_doc, hits])
+        else:
+            updates.append([i, df.at[i, doc_col], None])
     
     # create a dataframe out of the updated info
     # use original dataframe index so don't have to reset the index before

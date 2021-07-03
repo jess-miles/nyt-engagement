@@ -27,16 +27,16 @@ def clean_docs(doc):
     # unescape HTML characters
     doc = html.unescape(doc)
     
-    # remove URLs and links, replacing them with existing placeholder
+    # remove URLs and links, replacing them with space
     urls = re.findall("http[^ ]+|www\.[^ ]+", doc)
     for url in urls:
-        doc = str.replace(doc, url, '{link}')
+        doc = str.replace(doc, url, ' ')
     
     # replace non-ASCII characters with space
-    doc = re.sub(r"[^\x00-\x7F]+", ' ', doc)
+    #doc = re.sub(r"[^\x00-\x7F]+", ' ', doc)
     
     # replace ASCII control characters with space
-    doc = re.sub(r"[\x00-\x1F]", ' ', doc)
+    #doc = re.sub(r"[\x00-\x1F]", ' ', doc)
     
     # remove multiple spaces, which will exist after all this replacing words
     doc = re.sub(r"[ ]{2,}", ' ', doc)

@@ -246,6 +246,8 @@ def explore_data_catbin(to_explore, df, target, pred_type='cat'):
 
         sns.histplot(data=df, x=col, ax=ax1, discrete=disc)
         ax1.set_title(f"Distribution of {col}")
+        for tick in ax1.get_xticklabels():
+            tick.set_rotation(90)
 
         if pred_type=='cat':
 
@@ -259,6 +261,9 @@ def explore_data_catbin(to_explore, df, target, pred_type='cat'):
             
             sns.boxenplot(data=df, x=col, y=target, ax=ax2, orient='h', width=1)
             ax2.set_title("Feature Distribution Per Target Class");
+
+        
+        ax2.set_xticklabels(ax2.get_xticklabels(), rotation = 90)
             
     return None
 
@@ -291,3 +296,55 @@ def currency(x, pos=None):
         return '${:1.1f} K'.format(x*1e-3)
     else:
         return '${:.1f}'.format(x)
+
+
+def mark_outliers(df, outlier_col, mark_col, method='iqr'):
+    """Mark outliers so they can be excluded from exploration and visualization,
+    but not dropped from the data frame completely.
+    
+    Only IQR method supported at this time.
+    
+    Arguments:
+    
+    df = Dataframe that contains the columns to be assessed for outliers
+    
+    outlier_col = string. The name of the column to be checked for outliers.
+    
+    mark_col = string. The name of the new column to create in `df` to mark
+    outliers with a value of 1.
+    """
+    
+    # isolate the column as a series
+    col = df[outlier_col]
+    
+    if method == 'iqr':
+        # determine outlier cutoff points based on iqr
+        q1 = np.percentile(col, 25)
+        q3 = np.percentile(col, 75)
+        iqr = q3 - q1
+        under = q1 - (iqr * 1.5)
+        over = q3 + (iqr * 1.5)
+        
+        # determine how many rows, if any, will be dropped for each cutoff
+        under_drop = len(df.loc[df[outlier_col] < under, outlier_col])
+        over_drop = len(df.loc[df[outlier_col] > over, outlier_col])
+        
+        if under_drop > 0 or over_drop > 0:
+            
+            print(f"Number of lower outliers to mark: {under_drop}")
+            print(f"Number of upper outliers to mark: {over_drop}")
+
+            if under_drop > 0:
+                df.loc[df[outlier_col] < under, mark_col] = 1
+
+            if over_drop > 0:
+                df.loc[df[outlier_col] > over, mark_col] = 1
+
+            return df
+
+        else:
+            print("No outliers identified.")
+        
+        
+    else:
+        print("Error: Only iqr method is supported at this time.")

@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn import metrics
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -151,7 +152,7 @@ def eval_clf_model(clf, X_test, y_test, X_train, y_train, score='macro',
 
 def clf_gridsearch_wpipe(clf_pipe, grid_params, X_train, y_train, X_test, y_test,
                      class_labels, file_name, save_path, 
-                     scoring='recall_macro', n_jobs=-1, verbose=True,
+                     scoring='recall_macro', score_type='macro', n_jobs=-1, verbose=True,
                      normalize_cm='true'):
     """
     Uses provided `clf_pipe` and `grid_params` to perform a GridSearchCV on best
@@ -186,7 +187,7 @@ def clf_gridsearch_wpipe(clf_pipe, grid_params, X_train, y_train, X_test, y_test
 
     # print the classifier model report
     eval_clf_model(gs, X_test, y_test, X_train, y_train, labels=class_labels,
-                  normalize_cm=normalize_cm)
+                  normalize_cm=normalize_cm, score=score_type)
 
     return None
 

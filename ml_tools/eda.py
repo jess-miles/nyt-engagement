@@ -193,6 +193,10 @@ def explore_data_cont(to_explore, df, target, hist=True, box=True, plot_v_target
                 else:
                     normal = True
                     print(f'\nData IS normal with p-statistic = {p}\n')
+            else:
+                k2 = None
+                p = None
+                normal = None
 
             # append metadata to list of lists
             meta_list.append([col, corr.iloc[0][1], var_type, k2, p, normal, 

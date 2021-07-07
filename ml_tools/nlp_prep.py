@@ -24,6 +24,7 @@ def clean_docs(doc):
     Takes in a document at a time, and returns the cleaned document text as 
     a string.
     """
+
     # unescape HTML characters
     doc = html.unescape(doc)
     
@@ -31,6 +32,14 @@ def clean_docs(doc):
     urls = re.findall("http[^ ]+|www\.[^ ]+", doc)
     for url in urls:
         doc = str.replace(doc, url, ' ')
+
+    # encode unicode punctuation in ascii
+    # from https://stackoverflow.com/questions/816285/where-is-pythons-best-ascii-for-this-unicode-database
+    punctuation = {0x2018:0x27, 0x2019:0x27, 0x201C:0x22, 0x201D:0x22}
+
+    doc = doc.translate(punctuation).encode('ascii', 'ignore').decode()
+
+
     
     # replace non-ASCII characters with space
     #doc = re.sub(r"[^\x00-\x7F]+", ' ', doc)

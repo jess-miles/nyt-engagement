@@ -6,8 +6,9 @@ import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import seaborn as sns
+import nltk
 from nltk.probability import FreqDist
-from nltk.tokenize import TweetTokenizer
+from nltk.tokenize import TweetTokenizer, sent_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 
@@ -39,8 +40,9 @@ def clean_docs(doc):
 
     doc = doc.translate(punctuation).encode('ascii', 'ignore').decode()
 
+    # replace ellipses and doubled periods with single period
+    doc = re.sub(r"[.]+", '.', doc)
 
-    
     # replace non-ASCII characters with space
     #doc = re.sub(r"[^\x00-\x7F]+", ' ', doc)
     
@@ -294,28 +296,53 @@ def tokenize_corpus_dict_tweet(df, target_vals, stop_list=None,
         print(f"Done!")
     return corpus_per_target
 
-
-def tokenize_lemma_stem(doc):
+def pos_converter(penntree_pos):
+    """Converts POS tags from Penn Treebank format that nltk uses by default
+    to wordnet form.
+    
+    Adapted from from https://www.geeksforgeeks.org/python-lemmatization-approaches-with-examples/
     """
-    Applies TweetTokenization, then lemmatization and stemming in one shot.
+    from nltk.corpus import wordnet
+    
+    if penntree_pos.startswith('J'):
+        return wordnet.ADJ
+    elif penntree_pos.startswith('V'):
+        return wordnet.VERB
+    elif penntree_pos.startswith('N'):
+        return wordnet.NOUN
+    elif penntree_pos.startswith('R'):
+        return wordnet.ADV
+    else:          
+        return None
+
+def tokenize_lemma(doc):
+    """
+    Applies TweetTokenization, then lemmatization.
     
     Uses NLTK, so assumes the appropriate NLTK classes have been imported.
     
-    Uses TweetTokenizer to tokenize documents first, and remove handles.
-    Then uses NLTK lemmatization on each token.
-    Finally, applies stemming to each token.
+    Uses TweetTokenizer to tokenize documents first, and remove handles. Also
+    gets POS tags. Then uses NLTK lemmatization on each token with POS tags.
     """
     tweettokenizer = TweetTokenizer(preserve_case=False, strip_handles=True)
     lemmatizer = WordNetLemmatizer()
-    stemmer = PorterStemmer()
     
-    # tokenize using TweetTokenizer
-    tokens = tweettokenizer.tokenize(doc)
+
+    # split doc into sentences first
+    sents = sent_tokenize(doc)
+
+    # tokenize using TweetTokenizer and add POS tags for lemmatization
+    pos_tagged = [nltk.pos_tag(tweettokenizer.tokenize(sent)) for sent in sents]
     
     # lemmatize using NLTK
-    tokens = [lemmatizer.lemmatize(token) for token in tokens]
+    lemmas = []
+    for sent in pos_tagged:
+        new_sent = [lemmatizer.lemmatize(token[0], pos_converter(token[1])) 
+                    if pos_converter(token[1]) is not None else token[0] 
+                    for token in sent ]
+        lemmas.extend(new_sent)
     
     # stem using NLTK
-    tokens = [stemmer.stem(token, ) for token in tokens]
+    # final_tokens = [stemmer.stem(token, ) for token in lemmas]
     
-    return tokens
+    return lemmas

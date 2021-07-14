@@ -7,8 +7,9 @@ import joblib
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV, cross_val_score
 from sklearn.pipeline import Pipeline
+import joblib
 
-def eval_clf_model(clf, X_test, y_test, X_train, y_train, score='macro',
+def eval_clf_model(clf, X_test, y_test, X_train, y_train, score='std',
                reports=True, labels=['Class 0', 'Class 1'], 
                normalize_cm='true'):
     """Shows metrics and plots visualizations to interpret classifier model 
@@ -152,7 +153,7 @@ def eval_clf_model(clf, X_test, y_test, X_train, y_train, score='macro',
 
 def clf_gridsearch_wpipe(clf_pipe, grid_params, X_train, y_train, X_test, y_test,
                      class_labels, file_name, save_path, 
-                     scoring='recall_macro', score_type='macro', n_jobs=-1, verbose=True,
+                     scoring='recall', score_type='std', n_jobs=-1, verbose=1,
                      normalize_cm='true'):
     """
     Uses provided `clf_pipe` and `grid_params` to perform a GridSearchCV on best

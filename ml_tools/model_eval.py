@@ -70,9 +70,9 @@ def eval_clf_model(clf, X_test, y_test, X_train, y_train, score='std',
 
     # Train
     if score == 'std':
-        train_f1 = np.round(metrics.f1_score(y_train, train_preds), 4)
+        train_f1 = np.round(metrics.f1_score(y_train, train_preds, average=None), 4)
         print(f"                  Training F1 = {train_f1}")
-        train_r = np.round(metrics.recall_score(y_train, train_preds), 4)
+        train_r = np.round(metrics.recall_score(y_train, train_preds, average=None), 4)
         print(f"              Training Recall = {train_r}")
         train_acc = np.round(metrics.accuracy_score(y_train, train_preds), 4)
         print(f"            Training Accuracy = {train_acc}")
@@ -88,9 +88,9 @@ def eval_clf_model(clf, X_test, y_test, X_train, y_train, score='std',
     
     #Test
     if score == 'std':
-        test_f1 = np.round(metrics.f1_score(y_test, test_preds), 4)
+        test_f1 = np.round(metrics.f1_score(y_test, test_preds, average=None), 4)
         print(f"                      Test F1 = {test_f1}")
-        test_r = np.round(metrics.recall_score(y_test, test_preds), 4)
+        test_r = np.round(metrics.recall_score(y_test, test_preds, average=None), 4)
         print(f"                  Test Recall = {test_r}")
         test_acc = np.round(metrics.accuracy_score(y_test, test_preds), 4)
         print(f"                Test Accuracy = {test_acc}")

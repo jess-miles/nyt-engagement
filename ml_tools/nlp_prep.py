@@ -42,6 +42,7 @@ def clean_docs(doc):
 
     # replace ellipses and doubled periods with single period
     doc = re.sub(r"[.]+", '.', doc)
+    doc = re.sub(r"(\. \.)", '.', doc)
 
     # replace non-ASCII characters with space
     #doc = re.sub(r"[^\x00-\x7F]+", ' ', doc)

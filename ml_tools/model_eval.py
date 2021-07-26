@@ -236,3 +236,24 @@ def custom_confusion_matrix(df, title):
         ax.set_ylabel('True Label')
         plt.yticks(rotation=0)
         ax.set_title(title);
+
+
+def calc_conf_interval(mn, se, n, alpha=0.95):
+    """Calculates confidence interval for a sample mean using student's T.
+    Assumes sample mean has already been calculated and we have n. 
+    
+    mn: Sample mean
+    
+    se: Standard error, or standard deviation of the sample means
+    
+    n: Sample size
+    
+    alpha: Ratio for confidence interval
+    """
+    
+    if n > 1 and se > 0:
+        conf = st.t.interval(alpha=alpha, df=n-1, loc=mn, scale=se)
+    else:
+        conf = (mn, mn)
+    return list(conf)
+

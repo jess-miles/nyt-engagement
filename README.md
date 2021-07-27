@@ -6,9 +6,11 @@
 
 ***
 
+<img src="./images/nyt-engagement_header.jpg" width=100%>
+
 This analysis uses machine learning to understand the characteristics of New York Times Facebook posts that predict higher engagement.
 
-Although my model was not accurate enough to recommend using for prediction of future articles, it was able to determine important keyword and topical themes among high engagement posts. Interpreting these themes will help The New York Times prioritize the type of content to post to Facebook to increase engagement. 
+Although my model was not accurate enough to recommend using for prediction of future articles, it was able to determine important keyword and topical themes among high engagement posts. My interpretation of how similar topics and keywords might be grouped together is designed to help The New York Times prioritize the type of content to post to Facebook to increase engagement. 
 
 ## Business Problem
 
@@ -27,13 +29,13 @@ Of the original 48,000, I was only able to match about 43,000 because of various
 
 ## Methods
 
-Engagement metrics included number of comments, shares, and likes/loves. Rather than focus on just one, I created a binary target representing "high engagement".
-- Calculated the percentile for each separate metric
-- Calculated the mean of percentiles across metrics
-- Used mean percentile of 75 as the cutoff: posts with mean percentile over 75th were considered "high engagement" and those under 75th were "average engagement".
-- I also engineered a multi-class target using the same criteria for "high", but splitting the rest into "average" (below 25th percentile) and "moderate" (25th to 50th percentile).
+Engagement metrics included number of comments, shares, and likes/loves. Rather than focus on each of these separately, I created a single engagement metric.
+- First, I calculated the percentile for each separate metric
+- Then, I calculated the mean of percentiles across the three metrics to act as a single engagement metric
+- For my binary classification problem, posts with mean percentile over 75th were considered "high engagement" and those under 75th were considered "low engagement".
+- I also engineered a multi-class target using the same criteria for "high", but splitting the rest into "low" (below 25th percentile) and "moderate" (25th to 50th percentile).
 
-Below are the distributions for each engagement metric. Note: Histograms don't include outliers for visibility, but percentiles are calculated using all posts.
+Below are the distributions for each engagement metric. Note: Histograms don't include outliers for visibility, but percentiles are calculated with outliers included.
 
 ### Comments Distribution (All Posts)
 <img src="./images/dist-comments.png" width=90%>
@@ -44,9 +46,9 @@ Below are the distributions for each engagement metric. Note: Histograms don't i
 ### Likes Distribution (All Posts)
 <img src="./images/dist-likes.png" width=90%>
 
-The distributions of all pots and matched posts were quite similar. Although I modeled them separately, I used results form both sets of models in my final conclusions, without differentiating.
+The distributions of all Facebook posts and the smaller subset of posts matched to articles were quite similar. Although I modeled them separately, I used results from both sets of models in my final conclusions, without differentiating.
 
-There appeared to be a slight uptick in engagement when posts were made on weekends, so I engineered a categorica variable for that.
+There appeared to be a slight uptick in engagement when posts were made on weekends, so I engineered a categorical variable for that.
 
 I also engineered a categorical variable for time of day the post was made, as posts made in the morning and evening appeared to get more engagement.
 
@@ -66,109 +68,85 @@ I modeled both a binary and multi-class problem.
 
 The binary performed slightly better on High Engagement, but the multi-class was interesting to understand how the model tended to get confused.
 
-The best binary classificatino model was able to identify about 61% of high engagement posts correctly using cross-validation.
+The best binary classification model was able to identify about 62% of high engagement posts correctly (score is cross-validated).
+
+Preprocessing and model parameters were as follows:
+- Removed NLTK stopwords and punctuation, with the exception of '?' and permutations of the word 'your'
+- TF-IDF normalization on word vectors cosisting of  unigrams and bigrams
+- No lemmatization (it was tried, and found not to improve model performance)
+- Maximum 2000 features (both word vectors and categorical features)
+- Logistic Regression model using L2 regularization, no intercept
 
 <img src="./images/best_binary_confmatrix.png" width=90%>
 
-Distributions of all three engagement metrics had lots of outliers on the high end and tapered off very smoothly. I chose the 75th percentils as the cutoff for high, but there really is no obvious cutoff point. I think it's natural that the model would be confused about posts in the middle. The multi-class model confirms this, as it performed most poorly on the Moderate Engagement middle class.
+Distributions of all three engagement metrics had lots of outliers on the high end and tapered off very smoothly. I chose the 75th percentile as the cutoff for high, but there really is no obvious cutoff point. I believe it's natural that the model would be confused about posts in the middle. The multi-class model confirms this, as it performed most poorly on the Moderate Engagement middle class.
 
 <img src="./images/best_multi_confmatrix.png" width=50%>
 
-## Model Results
-
-### Top Keywords for High Engagement
-
-<img src="./images/top-high-words.png" width=45%>
-
-<p float="left">
-    <img src="./images/median-engage-election.png" width=45%>
-    <img src="./images/median-engage-opinion.png" width=43%>
-</p>
-<p float="left">
-    <img src="./images/median-engage-breaking.png" width=45%>
-    <img src="./images/median-engage-recipes.png" width=45%>
-</p>
-
-### Top Metadata Properties of High Engagement Posts
-<img src="./images/top-high-cats.png" width=50%>
-
-<img src="./images/median-engage-posttype.png" width=90%>
-<img src="./images/median-engage-weekday.png" width=90%>
-<img src="./images/median-engage-time.png" width=50%>
-
-### Top Subjects for High Engagement
-
-<img src="./images/top-high-subjects.png" width=45%>
-
-<p float="left">
-    <img src="./images/median-engage-obits.png" width=45%>
-    <img src="./images/median-engage-muslims.png" width=45%>
-    <img src="./images/median-engage-cats.png" width=45%>
-</p>
-
-### Top Keyword Predictors of Average Engagement
-
-<img src="./images/top-avg-words.png" width=45%>
-
-<p float="left">
-    <img src="./images/median-engage-sports.png" width=44%>
-    <img src="./images/median-engage-govt.png" width=45%>
-</p>
-<p float="left">
-    <img src="./images/median-engage-nytoday.png" width=45%>
-    <img src="./images/median-engage-quotation.png" width=45%>
-</p>
-<p float="left">
-    <img src="./images/median-engage-needknow.png" width=45%>
-    <img src="./images/median-engage-videowatch.png" width=45%>
-</p>
-
-### Top News Sections for Average Engagement
-<img src="./images/top-avg-sections.png" width=60%>
-
-### Top Subjects for Average Engagement
-<img src="./images/top-avg-subjects.png" width=60%>
-
-- General political and sports subjects, as seen before
-- Events outside the US (agrees with the World news section above)
-
 ## Recommendations:
 
-### For High Engagement
+To generate recommendations, I examined the predictors that had greatest odds ratios of High and Low engagement. Because the feature space was highly dimensional, and any given train-test-split may yield different top predictors, I performed 5 fits on different splits of the entire dataset, and generated a mean odds ratio across all 5 fits. I also calculated the confidence interval for this odds ratio based on the standard deviation across the fits. I ultimately only considered predictors which were included in at least 2 fits (only the top 2000 were used), and which had odds ratios over 1.0, outside the confidence interval. These confidence intervals are included as black lines on the plots below.
 
-Prioritize posts related to:
-- "Breaking News"
-- Opinion pieces
-- Recipes
+I reviewed the top predictors of high and low engagement manually, and grouped them logically into similar categories. I reviewed the top 300 predictors in each group.
+
+### 1. Prioritize Breaking News over Recurring Content
+
+- Breaking News was one of the top predictors of high engagement
+- In contrast, posts that represented daily or recurring features tended to have lower engagement. Examples include: Quotation of the Day, New York Today, Daily Briefing ("Here's what you need to know to start your day"), What You Should Watch This Week 
+
+<img src="./images/odds-breaking.png" width=90%>
+<img src="./images/odds-recurring.png" width=90%>
+
+### 2. Focus on the Current President and Election over General Politics
+
+- Topics related to the candidates in the 2016 presidential election, and the current president and first lady at the time, were highly engaging.
+- However, topics related to general politics and government were less engaging.
+
+<img src="./images/odds-election.png" width=90%>
+<img src="./images/odds-president.png" width=90%>
+<img src="./images/odds-politics.png" width=90%>
+
+### 3. Prioritize U.S. National content over U.S. Local and Foreign
+
+- Posts that mention 'America', 'Americans' and 'American', as well as patriotics themes such as the national anthem and flags, are highly engaging.
+- Posts with words that seem more local to certain places are less engaging, as is most foreign coverage.
+
+<img src="./images/odds-national.png" width=90%>
+<img src="./images/odds-local.png" width=90%>
+<img src="./images/odds-foreign.png" width=90%>
+
+### 4. Post More Multimedia Content Outside Subscriber Paywall
+
+- Video and Photo post types are where photos and videos were uploaded to Facebook, so are outside the paywall. These are more engaging.
+- Most posts containing the words "video" or "watch" are actually posted as links to content, which is frequently behind the paywall. These are less engaging.
+
+<img src="./images/odds-paywall.png" width=90%>
+<img src="./images/posts-watchvideo.png" width=90%>
+
+### 5. Post on Evenings and Weekends, when appropriate
+
+- Content posted from 7 PM to 11 PM or on a weekend day has slightly increased odds of high engagement compared to posts added at other times
+- This is likely due to News Feed algorithm prioritizing recently posted content, and these being popular times to engage with Facebook
+
+<img src="./images/odds-timing.png" width=90%>
+
+### 6. Focus on Additional Highly Engaging Topics
+- Opinion and Editorial content (though not Op-Eds and Ethics)
 - Obituaries
-- President-related names (Obama, and candidates in the 2016 presidential election race)
-- Divisive and controversial topics (gun control, gender equality, racial equality, vaccination, Muslim veiling, aminal rights and abuse)
-
-Although diverse, don't neglect "light" topics such as cats, hair, happiness, walking, kids, as these can also be quite successful.
-
-Post content as photo or video versus as a link. Even if the content is multimedia, it only gets more engagement if posted as an uploaded photo or video.
-
-As appropriate, post in the evening (7 PM to 11 PM) versus at other times of day. Also post on the weekends as appropriate.
-
-De-prioritize posts related to:
-
-- General sports
-- General political content
-- Recurring pieces such as "Quotation of the Day", "Daily Briefing", "New York Today"
-
-I wasn't able to determine a clear pattern, but also avoid posting text containing:
-- "Here's what you need to know"
-- "week"
-- the quotation mark
-
+- Recipes and Cooking (though not Food section)
+- Parenting and Children
+- Mental Health
+- Beauty and Self Care
+- Exercise
+- Marriage and Relationships
+- Religion
 
 ## Caveats and Limitations
 
 - Facebook's own News Feed algorithm is very important to driving engagement, and is based partly on user-centric preferences which we can't model
-- Odds of top predictors varied slightly depending on data split used for training
-- Leaning in to controversial or divisive topics should be carefully considered
 - The cutoff point for "High engagement" is somewhat arbitrary
-Tastes change, so results from 2016 may not be applicable to present day. Facebook's algorithm also may have changed.
+- Tastes change, so results from 2016 may not be applicable to present day. Facebook's algorithm also may have changed.
+- These recommendations assume high engagement is the primary goal: they should be considered in the context of The Times' values and mission statement.
 
 ## Potential Next Steps
 
@@ -184,19 +162,18 @@ For any additional questions, please contact **jess.c.miles@gmail.com
 
 ##### Repository Structure:
 
-Here is where you would describe the structure of your repoistory and its contents, for exampe:
-
 ```
 
-├── README.md               <- The top-level README for reviewers of this project.
-├── index.ipynb             <- narrative documentation of analysis in jupyter notebook
-├── data_gathering.ipynb             <- notebook used to gather data from NYT API and match it to posts
-├── presentation.pdf        <- pdf version of project presentation
+├── README.md                <- The top-level README for reviewers of this project.
+├── data_gathering.ipynb     <- 1. Notebook used to gather data from NYT API and match it to posts
+├── intro_eda.ipynb          <- 2. Project introduction and data cleaning and exploration
+├── model_analysis.ipynb     <- 3. Modeling and analysis of model results to form recommendations
+├── presentation.pdf         <- PDF version of project presentation
 └── images
-    └── images              <- images of visualizations
+    └── images               <- images of visualizations
 └── data
-    └── data                <- found and generated during analysis
+    └── data                 <- found and generated during analysis
 └── models
-    └── models              <- exported copies of best model pipelines
+    └── models               <- exported copies of best model pipelines, as well as notebook used to model in Google colab
 
 ```

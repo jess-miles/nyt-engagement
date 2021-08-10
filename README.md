@@ -1,6 +1,6 @@
-# How the New York Times can increase Facebook engagement
+# How The New York Times can increase Engagement on Facebook
 
-## Using machine learning to understand characteristics of high engagement
+## Using machine learning to understand characteristics of news content that garners "high" Facebook engagement
 ***
 **Author**: Jessica Miles - jess.c.miles@gmail.com
 
@@ -8,30 +8,30 @@
 
 <img src="./images/nyt-engagement_header.jpg" width=100%>
 
-This analysis uses machine learning to understand the characteristics of New York Times Facebook posts that predict higher engagement.
+In this repository, I used machine learning to understand the characteristics of Facebook content posted by The New York Times that lead to high user engagement. The analysis includes Natural Language Processing (NLP) of the post and article metadata as well as categorical features from both the posts and original articles.
 
-Although my model was not accurate enough to recommend using for prediction of future articles, it was able to determine important keyword and topical themes among high engagement posts. My interpretation of how similar topics and keywords might be grouped together is designed to help The New York Times prioritize the type of content to post to Facebook to increase engagement. 
+My model was ultimately not accurate enough for me to recommend using it as a "black box" deciding which articles to post to Facebook. Instead, I used its coefficients to determine the most important keyword and topics among high versus low engagement posts, then grouped together similar topics and keywords together into themes to form recommendations. I believe this approach resulted in  generalized results which are more likely to be useful over time, as compared to focusing on specific high engagement topics which only occur once, such as "the 2016 Presidential Election."
 
 ## Business Problem
 
-Modern Americans consume news in multiple formats: printed newspaper, online on websites, and on social media. To remain relevant in modern times, news outlets need to be able to engage users on platforms such as Facebook as well as using traditional methods. However, what Facebook users engage with more may differ from consumers of print media.
+Modern Americans consume news in multiple formats: printed newspaper, browsing and searching websites online, and on in their social media feed. To remain relevant in modern times, news organizations need to be able to engage users on social media platforms such as Facebook as well as using traditional print and web methods. However, what Facebook users engage with most may differ from what is run on the front page of the printed paper, so it's prudent to analyze user engagement with Facebook content separately.
 
-One criterion Facebook's News Feed algorithm uses to prioritize what its users see is amount of engagement (shares, comments, and likes) on a given post. Higher prioritization in News Feed may help content be disseminated to a wider audience, some of whom may decide to become subscribers.
+One criterion Facebook's News Feed algorithm uses to prioritize what it features prominently to users is the amount of initial engagement (shares, comments, and likes) on a given post. Higher prioritization in News Feed may help content be disseminated to a wider audience, some of whom may decide to become subscribers.
 
-Relevant and important news is not always the most popular, so outlets like The New York Times will likely not want to simply use top predictors of engagement on Facebook to decide what to report on. However, understanding what people engage with the most will shed light on what Facebook users care about, and may help The Times decide which articles to prioritize for posting. I also modeled how and when posts were made, to shed insights on steps The Times could take to increase engagement on any topic.
+Relevant and important news is not always the most popular, so outlets like The New York Times will likely not want to simply use top predictors of engagement on Facebook to decide what to report on. However, understanding what people engage with the most will shed light on what Facebook users care about, and may help The Times decide which articles to prioritize for posting on Facebook. I also modeled how and when posts were made, to shed light on steps The Times could take to increase engagement on any topic.
 
 ## Data
-I started with a [found dataset](https://data.world/martinchek/2012-2016-facebook-posts) of about 48,000 Facebook posts from the New York Times' account covering the time period from late 2012 to late 2016. Data included the text in the post, when it was posted, and post type (link, video, or photo).
+I started with a [found dataset](https://data.world/martinchek/2012-2016-facebook-posts) of about 48,000 Facebook posts from The New York Times' account covering the time period from late 2012 to late 2016. Data used in the analysis included the text in the post, when it was posted, and post type (link, video, or photo).
 
-I also used the NYT API to pull all article metadata from this time period, and went through several steps to match the content in the Facebook posts to articles of mutimedia features. The NYT API provided additional metadata about the news content, such as topical subjects, article word count, and format (written versus multimedia).
+I also used the [NYT API](https://developer.nytimes.com/apis) to pull all article metadata from this time period, and went through several steps to match the content in the Facebook posts to their original articles and multimedia features. The data I retrieved from the NYT API included article headline and abstract as well as metadata such as the news desk the article came from, topical subjects and other entities mentioned in the articles, word count, and format (written versus multimedia).
 
-Of the original 48,000, I was only able to match about 43,000 because of various differences between post text and links and the current text and links I could pull from the API. Therefore, I modeled all posts versus matched posts as two separate data sets.
+Of the original 48,000 Facebook posts, I was only able to match about 43,000 of them to articles. There were some challlenges in performing the matching due to differences between FB post text and links and the current article abstract and links; the links in the Facebook posts were often shortened, and even once expanded did not always match directly to a current article. Therefore, I modeled the features derived from all Facebook posts as a separate data set from the features derived from matched articles.
 
 ## Methods
 
 Engagement metrics included number of comments, shares, and likes/loves. Rather than focus on each of these separately, I created a single engagement metric.
-- First, I calculated the percentile for each separate metric
-- Then, I calculated the mean of percentiles across the three metrics to act as a single engagement metric
+- First, I calculated the percentile for each separate metric for each post
+- Then, I calculated the mean of percentiles across the three metrics to act as a single engagement metric for that post
 - For my binary classification problem, posts with mean percentile over 75th were considered "high engagement" and those under 75th were considered "low engagement".
 - I also engineered a multi-class target using the same criteria for "high", but splitting the rest into "low" (below 25th percentile) and "moderate" (25th to 50th percentile).
 
@@ -46,15 +46,15 @@ Below are the distributions for each engagement metric. Note: Histograms don't i
 ### Likes Distribution (All Posts)
 <img src="./images/dist-likes.png" width=90%>
 
-The distributions of all Facebook posts and the smaller subset of posts matched to articles were quite similar. Although I modeled them separately, I used results from both sets of models in my final conclusions, without differentiating.
+The distributions of all Facebook posts and the smaller subset of posts matched to articles were quite similar. Although I modeled them separately, I used results from both sets of models in my final recommendations.
 
 There appeared to be a slight uptick in engagement when posts were made on weekends, so I engineered a categorical variable for that.
 
 I also engineered a categorical variable for time of day the post was made, as posts made in the morning and evening appeared to get more engagement.
 
-When I visualized the most frequent words for high versus average engagement, I saw that words related to 2016 presidential candidates were more common in high engagement than in average. Otherwise though, they looked quite similar.
+When I visualized the most frequent words for high versus low engagement, I saw that words related to 2016 presidential candidates were more common in high engagement than in average. Otherwise though, they looked quite similar.
 
-### Word Frequencies for Average Engagement
+### Word Frequencies for Low Engagement
 <img src="./images/eda-wordfreq-avg.png" width=90%>
 
 ### Word Frequencies for High Engagement
@@ -62,32 +62,42 @@ When I visualized the most frequent words for high versus average engagement, I 
 
 I also noticed that some high engagement posts posed questions to users, and asked their opinions. I created custom stopwords lists without permutations of the word "you" and without the quotation mark, to test performance compared to full stop words and punctuation list.
 
+I used sklearn's GridSearchCV combined with pipelines and other transformer classes to iterate over several different NLP preprocessing approaches, as well as Logistic Regression and Nauve Bayes model hyperparameters. The preprocessing steps I tested included:
+- Text vectorization strategy count, binary, or count + Tf-Idf normalization
+- Removing different sets of stopwords and punctuation
+- Uni-grams, bi-grams, or both
+- Applying lemmatization (with POS tags) or not
+- Varying number of `max_features` to be used in modeling
+
 ## Model Performance
 
 I modeled both a binary and multi-class problem. 
 
-The binary performed slightly better on High Engagement, but the multi-class was interesting to understand how the model tended to get confused.
+The binary performed slightly better on High Engagement, but the multi-class was interesting for what it showed about how the model tended to get confused.
 
-The best binary classification model was able to identify about 62% of high engagement posts correctly (score is cross-validated).
+The best binary classification model was able to identify about 62% of high engagement posts correctly (score is cross-validated, and on unseen test data).
 
-Preprocessing and model parameters were as follows:
+Preprocessing and model parameters for the best model were as follows:
 - Removed NLTK stopwords and punctuation, with the exception of '?' and permutations of the word 'your'
-- TF-IDF normalization on word vectors cosisting of  unigrams and bigrams
-- No lemmatization (it was tried, and found not to improve model performance)
-- Maximum 2000 features (both word vectors and categorical features)
-- Logistic Regression model using L2 regularization, no intercept
+- TF-IDF normalization on word vectors cosisting of both uni-grams and bi-grams
+- Maximum 2000 features (both word vectors and topics)
+- Logistic Regression model using L2 regularization, no intercept fitted
+
+### Binary Confusion Matrix on Test Data
 
 <img src="./images/best_binary_confmatrix.png" width=90%>
 
-Distributions of all three engagement metrics had lots of outliers on the high end and tapered off very smoothly. I chose the 75th percentile as the cutoff for high, but there really is no obvious cutoff point. I believe it's natural that the model would be confused about posts in the middle. The multi-class model confirms this, as it performed most poorly on the Moderate Engagement middle class.
+### Multi-Class Confusion Matrix on Test Data
 
 <img src="./images/best_multi_confmatrix.png" width=50%>
 
+Distributions of all three engagement metrics were very right-skewed: they had many outliers on the high end and tapered off very smoothly. I ultimately chose the 75th percentile as the cutoff for "high engagement", but there truly was no obvious cutoff point. Earlier in my analysis, I initially onsidered only outliers (using IQR * 1.5) to be high engagement, but these models did not perform as well. I believe it's natural that the model would be confused about posts towards the middle of the distribution regardless of where the cutoff point is drawn. The multi-class model confirms this, as it performed most poorly on the Moderate Engagement middle class which represents the 25th through 75th percentiles.
+
 ## Recommendations:
 
-To generate recommendations, I examined the predictors that had greatest odds ratios of High and Low engagement. Because the feature space was highly dimensional, and any given train-test-split may yield different top predictors, I performed 5 fits on different splits of the entire dataset, and generated a mean odds ratio across all 5 fits. I also calculated the confidence interval for this odds ratio based on the standard deviation across the fits. I ultimately only considered predictors which were included in at least 2 fits (only the top 2000 were used), and which had odds ratios over 1.0, outside the confidence interval. These confidence intervals are included as black lines on the plots below.
+To generate recommendations, I examined the predictors that had greatest odds ratios of High and Low engagement. Because the feature space was highly dimensional, and any given train-test-split may yield different top predictors, I performed 5 fits on different splits of the entire dataset, and generated a mean odds ratio across all 5 fits. I also calculated the confidence interval for this odds ratio based on the standard deviation across the fits, which is represented as black lines on the charts below. I ultimately only considered predictors which were included in at least 2 fits (only the top 2000 were used, so this did vary depending on the train-test-split), and which had odds ratios over 1.0, within the confidence interval.
 
-I reviewed the top predictors of high and low engagement manually, and grouped them logically into similar categories. I reviewed the top 300 predictors in each group.
+I reviewed the top predictors of High and Low engagement manually in a Google Sheet, and grouped them logically into similar categories. I reviewed the top 300 predictors of both High and Low for Facebook post uni-grams and bi-grams as well as original article subjects, for a total of about 1,200 words and topics that I categorized.
 
 ### 1. Prioritize Breaking News over Recurring Content
 
@@ -141,6 +151,8 @@ I reviewed the top predictors of high and low engagement manually, and grouped t
 - Marriage and Relationships
 - Religion
 
+See the Appendix in [my presentation](./presentation.pdf) for additional charts showing the odds ratios for high engagement on these topics.
+
 ## Caveats and Limitations
 
 - Facebook's own News Feed algorithm is very important to driving engagement, and is based partly on user-centric preferences which we can't model
@@ -155,7 +167,7 @@ I reviewed the top predictors of high and low engagement manually, and grouped t
 - Create an interactive dashboard so engagement of certain words and subjects can be reviewed
 
 ### For further information
-Please review the narrative of my analysis in [my jupyter notebook](./index.ipynb) or review my [presentation](./presentaion.pdf)
+Please review the narrative of my analysis in [my introductory jupyter notebook](./intro_eda.ipynb), [modeling and analysis notebook](./model_analysis.ipynb), and my [presentation](./presentation.pdf).
 
 For any additional questions, please contact **jess.c.miles@gmail.com
 

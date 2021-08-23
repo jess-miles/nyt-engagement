@@ -14,11 +14,13 @@ My model was ultimately not accurate enough for me to recommend using it as a "b
 
 ## Business Problem
 
-Modern Americans consume news in multiple formats: printed newspaper, browsing and searching websites online, and on in their social media feed. To remain relevant in modern times, news organizations need to be able to engage users on social media platforms such as Facebook as well as using traditional print and web methods. However, what Facebook users engage with most may differ from what is run on the front page of the printed paper, so it's prudent to analyze user engagement with Facebook content separately.
+Modern Americans consume news in multiple formats: in print, browsing and searching websites online, and on social media. To remain relevant in modern times, news organizations need to be able to engage users on social media platforms such as Facebook as well as using traditional print and web methods. 
 
-One criterion Facebook's News Feed algorithm uses to prioritize what it features prominently to users is the amount of initial engagement (shares, comments, and likes) on a given post. Higher prioritization in News Feed may help content be disseminated to a wider audience, some of whom may decide to become subscribers.
+However, news outlets may produce far more content than can reasonably be posted to such platforms, so they need a methodology to decide what content formats and topics will be most successful. The type of content Facebook users engage with most may differ from what is run on the front page of the printed paper, so it's prudent to analyze user engagement with Facebook content as a standalone exercise.
 
-Relevant and important news is not always the most popular, so outlets like The New York Times will likely not want to simply use top predictors of engagement on Facebook to decide what to report on. However, understanding what people engage with the most will shed light on what Facebook users care about, and may help The Times decide which articles to prioritize for posting on Facebook. I also modeled how and when posts were made, to shed light on steps The Times could take to increase engagement on any topic.
+One criterion Facebook's News Feed algorithm uses to prioritize content's visibility to users is the amount of initial engagement (shares, comments, and likes) on a given post. Higher prioritization in News Feed may help content be disseminated to a wider audience, some of whom may decide to become subscribers.
+
+It's important to note that while this analysis focuses on increasing engagement, I do not advocate for engagement level to be the only consideration in deciding what to post. Just because people enjoy sharing recipes and reading pieces about animals doesn't mean The Times should unequivocally prioritize those topics over pieces related to general politics or the economy. However, understanding the patterns behind high Facebook engagement could be included as one factor of many in the ultimate editorial decision.
 
 ## Data
 I started with a [found dataset](https://data.world/martinchek/2012-2016-facebook-posts) of about 48,000 Facebook posts from The New York Times' account covering the time period from late 2012 to late 2016. Data used in the analysis included the text in the post, when it was posted, and post type (link, video, or photo).
